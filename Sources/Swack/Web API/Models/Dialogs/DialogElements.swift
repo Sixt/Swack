@@ -16,6 +16,8 @@ public enum DialogElementType: String, Codable {
 public protocol DialogElement: Encodable {
     static var type: DialogElementType { get }
 
+    var name: String { get }
+
     var onValidation: (() -> ValidationError)? { get }
 }
 

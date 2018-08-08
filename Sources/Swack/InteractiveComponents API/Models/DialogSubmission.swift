@@ -66,6 +66,10 @@ public struct DialogSubmission: Content {
         responseURL = try container.decode(String.self, forKey: .responseURL)
     }
 
+    public func value(for element: DialogElement) -> String? {
+        return submission[element.name]
+    }
+
 }
 
 extension DialogSubmission: Replyable {
