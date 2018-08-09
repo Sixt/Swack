@@ -5,9 +5,9 @@
 //  Created by franz busch on 04.07.18.
 //
 
-import Vapor
+import Foundation
 
-public struct Dialog: Content {
+public struct Dialog: Encodable {
 
     public let title: String
     public let callbackId: String
@@ -23,10 +23,6 @@ public struct Dialog: Content {
         case elements
         case submitLabel = "submit_label"
         case notifyOnCancel = "notify_on_cancel"
-    }
-
-    public init(from decoder: Decoder) throws {
-        fatalError()
     }
 
     public init(title: String, callbackId: String, elements: [DialogElement], submitLabel: String, notifyOnCancel: Bool, onSubmission: @escaping (DialogSubmission) -> Void) {

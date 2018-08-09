@@ -19,7 +19,7 @@ class DialogService {
 
     func post(_ dialogOpenRequest: DialogOpenRequest) -> Future<Response> {
         return client.post("https://slack.com/api/dialog.open", headers: HTTPHeaders([("Authorization", "Bearer \(token)")])) { postRequest in
-            try postRequest.content.encode(dialogOpenRequest)
+            try postRequest.content.encode(json: dialogOpenRequest)
         }
     }
 

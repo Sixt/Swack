@@ -5,9 +5,9 @@
 //  Created by franz busch on 04.07.18.
 //
 
-import Vapor
+import Foundation
 
-struct DialogOpenRequest: Content {
+struct DialogOpenRequest: Encodable {
 
     let triggerId: String
     let dialog: Dialog
