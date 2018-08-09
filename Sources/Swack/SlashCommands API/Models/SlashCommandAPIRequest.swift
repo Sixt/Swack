@@ -7,7 +7,7 @@
 
 import Vapor
 
-public struct SlashCommandAPIRequest: Content {
+public struct SlashCommand: Content {
 
     public let token: String
     public let command: String
@@ -31,5 +31,16 @@ public struct SlashCommandAPIRequest: Content {
         case channelId = "channel_id"
     }
 
+}
+
+extension SlashCommand: Replyable {
+
+    public var toChannel: String {
+        return channelId
+    }
+
+    public var toUser: String {
+        return userId
+    }
 
 }

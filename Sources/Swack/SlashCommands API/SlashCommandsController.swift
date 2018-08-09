@@ -9,7 +9,7 @@ import Vapor
 
 protocol SlashCommandsControllerDelegate: class {
 
-    func received(command: SlashCommandAPIRequest)
+    func received(command: SlashCommand)
 
 }
 
@@ -19,10 +19,10 @@ final class SlashCommandsController: RouteCollection {
 
     func boot(router: Router) throws {
         let route = router.grouped("slashcommands")
-        route.post(SlashCommandAPIRequest.self, at:"", use: postHandler)
+        route.post(SlashCommand.self, at:"", use: postHandler)
     }
 
-    func postHandler(_ req: Request, command: SlashCommandAPIRequest) throws -> HTTPStatus {
+    func postHandler(_ req: Request, command: SlashCommand) throws -> HTTPStatus {
         delegate?.received(command: command)
         return .ok
     }

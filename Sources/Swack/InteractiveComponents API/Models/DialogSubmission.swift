@@ -70,6 +70,10 @@ public struct DialogSubmission: Content {
         return submission[element.name]
     }
 
+    subscript(element: DialogElement) -> String? {
+        return value(for: element)
+    }
+
 }
 
 extension DialogSubmission: Replyable {

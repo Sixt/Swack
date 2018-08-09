@@ -27,7 +27,7 @@ private struct MessageListener {
 private struct SlashCommandListener {
 
     let command: String
-    let callback: ((SlashCommandAPIRequest, Swack) -> Void)
+    let callback: ((SlashCommand, Swack) -> Void)
 
 }
 
@@ -85,24 +85,38 @@ public class Swack {
         messageListeners.append(MessageListener(regex: regex, callback: callback))
     }
 
-    public func addSlashCommandListener(for command: String, callback: @escaping (SlashCommandAPIRequest, Swack) -> Void) {
+    public func addSlashCommandListener(for command: String, callback: @escaping (SlashCommand, Swack) -> Void) {
         slashCommandListeners.append(SlashCommandListener(command: command, callback: callback))
     }
 
-    public func reply(to replyable: Replyable, text: String) -> Future<Response> {
-        let message = ChatPostMessage(channel: replyable.toChannel, text: text)
-        return chatService.post(message)
+    @discardableResult
+    public func replyWithDialog(to slashCommand: SlashCommand, dialog: Dialog) -> Future<Response> {
+        let dialogOpenRequest = DialogOpenRequest(triggerId: slashCommand.triggerId, dialog: dialog)
+        dialogs[dialog.callbackId] = dialog
+        return dialogService.post(dialogOpenRequest)
     }
 
+}
+
+
+// MARK: WebAPI - Chat
+extension Swack {
+
+    @discardableResult
+    public func reply(to replyable: Replyable, text: String) -> Future<Response> {
+        return post(to: replyable.toChannel, text: text)
+    }
+
+    @discardableResult
     public func replyEphemeral(to replyable: Replyable, text: String) -> Future<Response> {
         let message = ChatPostEphemeralMessage(channel: replyable.toChannel, user: replyable.toUser, text: text)
         return chatService.postEphemeral(message)
     }
 
-    public func replyWithDialog(to slashCommand: SlashCommandAPIRequest, dialog: Dialog) -> Future<Response> {
-        let dialogOpenRequest = DialogOpenRequest(triggerId: slashCommand.triggerId, dialog: dialog)
-        dialogs[dialog.callbackId] = dialog
-        return dialogService.post(dialogOpenRequest)
+    @discardableResult
+    public func post(to channel: String, text: String) -> Future<Response> {
+        let message = ChatPostMessage(channel: channel, text: text)
+        return chatService.post(message)
     }
 
 }
@@ -127,7 +141,7 @@ extension Swack: EventsControllerDelegate {
 extension Swack: SlashCommandsControllerDelegate {
 
 
-    func received(command: SlashCommandAPIRequest) {
+    func received(command: SlashCommand) {
         slashCommandListeners.filter { $0.command == command.command }.forEach { $0.callback(command, self) }
     }
 
