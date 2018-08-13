@@ -14,10 +14,23 @@ import Foundation
 
 public typealias EventListener = (EventsAPIRequest) -> ()
 
-private struct MessageListener {
+public protocol SlashCommandListener: class {
 
-    let regex: String
-    let callback: ((MessageEvent, Swack) -> Void)
+    var command: String { get }
+
+    func slashCommandReceived(command: SlashCommand, swack: Swack)
+
+}
+
+public protocol MessageListener: class {
+
+    var regex: String { get }
+
+    func messageReceived(_ messageEvent: MessageEvent, swack: Swack)
+
+}
+
+extension MessageListener {
 
     func matches(input: String) throws -> Bool {
         let expression = try NSRegularExpression(pattern: regex, options: [])
@@ -28,12 +41,7 @@ private struct MessageListener {
 
 }
 
-private struct SlashCommandListener {
-
-    let command: String
-    let callback: ((SlashCommand, Swack) -> Void)
-
-}
+public typealias DialogSubmissionListener = (DialogSubmission, Swack) -> Void
 
 public class Swack {
 
@@ -46,7 +54,7 @@ public class Swack {
     private var messageListeners = [MessageListener]()
     private var slashCommandListeners = [SlashCommandListener]()
 
-    private var dialogs = [String: Dialog]()
+    private var dialogs = [String: DialogSubmissionListener]()
 
     public init(_ env: Environment, token: String) throws {
         let config = Config.default()
@@ -85,18 +93,18 @@ public class Swack {
     }
 
 
-    public func addMessageListener(for regex: String, callback: @escaping (MessageEvent, Swack) -> Void) {
-        messageListeners.append(MessageListener(regex: regex, callback: callback))
+    public func addMessageListener(_ listener: MessageListener) {
+        messageListeners.append(listener)
     }
 
-    public func addSlashCommandListener(for command: String, callback: @escaping (SlashCommand, Swack) -> Void) {
-        slashCommandListeners.append(SlashCommandListener(command: command, callback: callback))
+    public func addSlashCommandListener(_ listener: SlashCommandListener) {
+        slashCommandListeners.append(listener)
     }
 
     @discardableResult
-    public func replyWithDialog(to slashCommand: SlashCommand, dialog: Dialog) -> Future<Response> {
+    public func replyWithDialog(to slashCommand: SlashCommand, dialog: Dialog, onSubmission: @escaping DialogSubmissionListener) -> Future<Response> {
         let dialogOpenRequest = DialogOpenRequest(triggerId: slashCommand.triggerId, dialog: dialog)
-        dialogs[dialog.callbackId] = dialog
+        dialogs[dialog.callbackId] = onSubmission
         return dialogService.post(dialogOpenRequest)
     }
 
@@ -128,17 +136,18 @@ extension Swack {
 extension Swack: EventsControllerDelegate {
 
     func received(event: EventsAPIRequest) {
-        guard let type = event.event?.type else {
-            return
-        }
-
-        switch type {
-        case .message:
-            let messageEvent = event.event as! MessageEvent
-            messageListeners.filter { (try? $0.matches(input: messageEvent.text)) ?? false }
-                .forEach { $0.callback(messageEvent, self) }
+        switch event.event {
+        case let event as MessageEvent:
+            messageEventReceived(event)
         default:
             break
+        }
+    }
+
+    func messageEventReceived(_ event: MessageEvent) {
+        for listener in messageListeners {
+            guard (try? listener.matches(input: event.text)) ?? false else { return }
+            listener.messageReceived(event, swack: self)
         }
     }
 
@@ -148,7 +157,10 @@ extension Swack: SlashCommandsControllerDelegate {
 
 
     func received(command: SlashCommand) {
-        slashCommandListeners.filter { $0.command == command.command }.forEach { $0.callback(command, self) }
+        for listener in slashCommandListeners {
+            guard listener.command == command.command else { return }
+            listener.slashCommandReceived(command: command, swack: self)
+        }
     }
 
 }
@@ -156,7 +168,7 @@ extension Swack: SlashCommandsControllerDelegate {
 extension Swack: InteractiveComponentsControllerDelegate {
 
     func received(submission: DialogSubmission) {
-        dialogs[submission.callbackId]?.onSubmission(submission)
+        dialogs[submission.callbackId]?(submission, self)
     }
 
 }
