@@ -28,6 +28,14 @@ public enum MessageEventSubType: String, Decodable {
     case threadBroadcast = "thread_broadcast"
 }
 
+public enum MessageEventChannelType: String, Decodable {
+    case appHome = "app_home"
+    case im
+    case channel
+    case group
+    case mpim
+}
+
 public struct MessageEvent: Event {
 
     public var type: EventType
@@ -37,6 +45,7 @@ public struct MessageEvent: Event {
     public var botId: String?
     public var channel: String
     public var text: String
+    public var channelType: MessageEventChannelType?
 
     private enum CodingKeys: String, CodingKey {
         case type
@@ -46,6 +55,7 @@ public struct MessageEvent: Event {
         case botId = "bot_id"
         case channel
         case text
+        case channelType = "channel_type"
     }
 
     public init(from decoder: Decoder) throws {
@@ -58,6 +68,7 @@ public struct MessageEvent: Event {
         botId = try container.decodeIfPresent(String.self, forKey: .botId)
         channel = try container.decode(String.self, forKey: .channel)
         text = try container.decode(String.self, forKey: .text)
+        channelType = try? container.decode(MessageEventChannelType.self, forKey: .channelType)
     }
 
 }

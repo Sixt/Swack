@@ -45,6 +45,8 @@ public typealias DialogSubmissionListener = (DialogSubmission, Swack) -> Void
 
 public class Swack {
 
+    private let isDebug: Bool
+
     private let application: Application
     private let client: Client
 
@@ -57,7 +59,8 @@ public class Swack {
 
     private var dialogs = [String: DialogSubmissionListener]()
 
-    public init(_ env: Environment, token: String) throws {
+    public init(_ env: Environment, token: String, isDebug: Bool) throws {
+        self.isDebug = isDebug
         let config = Config.default()
         var services = Services.default()
         let router = EngineRouter.default()
@@ -110,6 +113,11 @@ public class Swack {
         return dialogService.post(dialogOpenRequest)
     }
 
+    private func log(object: Any) {
+        guard isDebug else { return }
+        print(String(reflecting: object))
+    }
+
 }
 
 
@@ -138,6 +146,7 @@ extension Swack {
 extension Swack: EventsControllerDelegate {
 
     func received(event: EventsAPIRequest) {
+        log(object: event)
         switch event.event {
         case let event as MessageEvent:
             messageEventReceived(event)
@@ -159,6 +168,7 @@ extension Swack: SlashCommandsControllerDelegate {
 
 
     func received(command: SlashCommand) {
+        log(object: command)
         for listener in slashCommandListeners {
             guard listener.command == command.command else { return }
             listener.slashCommandReceived(command: command, swack: self)
@@ -170,6 +180,7 @@ extension Swack: SlashCommandsControllerDelegate {
 extension Swack: InteractiveComponentsControllerDelegate {
 
     func received(submission: DialogSubmission) {
+        log(object: submission)
         dialogs[submission.callbackId]?(submission, self)
     }
 
