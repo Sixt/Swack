@@ -1,13 +1,17 @@
+//===----------------------------------------------------------------------===//
 //
-//  SlashCommandAPIRequest.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 04.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-import Vapor
+import Foundation
 
-public struct SlashCommand: Content {
+public struct SlashCommand: Decodable {
 
     public let token: String
     public let command: String

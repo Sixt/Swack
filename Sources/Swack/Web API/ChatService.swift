@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  Chat.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 14.05.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 
@@ -19,13 +23,13 @@ class ChatService {
 
     func post(_ message: ChatPostMessage) -> Future<Response> {
         return client.post("https://slack.com/api/chat.postMessage", headers: HTTPHeaders([("Authorization", "Bearer \(token)")])) { postRequest in
-            try postRequest.content.encode(message)
+            try postRequest.content.encode(json: message)
         }
     }
 
     func postEphemeral(_ message: ChatPostEphemeralMessage) -> Future<Response> {
         return client.post("https://slack.com/api/chat.postEphemeral", headers: HTTPHeaders([("Authorization", "Bearer \(token)")])) { postRequest in
-            try postRequest.content.encode(message)
+            try postRequest.content.encode(json: message)
         }
     }
 

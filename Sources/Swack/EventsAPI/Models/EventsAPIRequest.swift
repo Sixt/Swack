@@ -1,18 +1,22 @@
+//===----------------------------------------------------------------------===//
 //
-//  EventsAPIRequest
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 12.02.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-import Vapor
+import Foundation
 
-public enum EventsAPIRequestType: String, Content {
-    case urlVerification = "url_verification"
-    case eventCallback = "event_callback"
+public enum EventsAPIRequestType: String, Decodable {
+    case urlVerification
+    case eventCallback
 }
 
-public struct EventsAPIRequest: Content {
+public struct EventsAPIRequest: Decodable {
 
     public var token: String
     public var type: EventsAPIRequestType
@@ -58,12 +62,10 @@ public struct EventsAPIRequest: Content {
             switch eventType {
             case .message:
                 event = try container.decode(MessageEvent.self, forKey: .event)
+            default:
+                break
             }
         }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        
     }
 
 }

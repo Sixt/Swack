@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  SlashCommandsController.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 04.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 
@@ -19,10 +23,11 @@ final class SlashCommandsController: RouteCollection {
 
     func boot(router: Router) throws {
         let route = router.grouped("slashcommands")
-        route.post(SlashCommand.self, at:"", use: postHandler)
+        route.post("", use: postHandler)
     }
 
-    func postHandler(_ req: Request, command: SlashCommand) throws -> HTTPStatus {
+    func postHandler(_ req: Request) throws -> HTTPStatus {
+        let command = try req.content.syncDecode(SlashCommand.self)
         delegate?.received(command: command)
         return .ok
     }

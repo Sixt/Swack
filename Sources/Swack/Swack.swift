@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  Swack.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 14.05.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 import Foundation
@@ -133,6 +137,8 @@ extension Swack: EventsControllerDelegate {
             let messageEvent = event.event as! MessageEvent
             messageListeners.filter { (try? $0.matches(input: messageEvent.text)) ?? false }
                 .forEach { $0.callback(messageEvent, self) }
+        default:
+            break
         }
     }
 

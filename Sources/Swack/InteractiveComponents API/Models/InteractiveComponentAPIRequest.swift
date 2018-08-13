@@ -1,18 +1,22 @@
+//===----------------------------------------------------------------------===//
 //
-//  InteractiveComponentAPIRequest.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 15.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-import Vapor
+import Foundation
 
-private enum InteractiveComponentType: String, Content {
+private enum InteractiveComponentType: String, Decodable {
     case dialogSubmission = "dialog_submission"
     case dialogCancellation = "dialog_cancellation"
 }
 
-internal enum InteractiveComponentAPIRequest: Content {
+internal enum InteractiveComponentAPIRequest: Decodable {
     case dialogSubmission(DialogSubmission)
     case dialogCancellation
 
@@ -41,13 +45,9 @@ internal enum InteractiveComponentAPIRequest: Content {
             self = .dialogCancellation
         }
     }
-
-    func encode(to encoder: Encoder) throws {
-        
-    }
 }
 
-private struct InteractiveComponentAPIRequestPayload: Content {
+private struct InteractiveComponentAPIRequestPayload: Decodable {
 
     let type: InteractiveComponentType
 

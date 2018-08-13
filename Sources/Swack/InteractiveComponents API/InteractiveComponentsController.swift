@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  InteractiveComponentsController.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 15.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 
@@ -19,10 +23,12 @@ final class InteractiveComponentsController: RouteCollection {
 
     func boot(router: Router) throws {
         let route = router.grouped("actions")
-        route.post(InteractiveComponentAPIRequest.self, at:"", use: postHandler)
+        route.post("", use: postHandler)
     }
 
-    func postHandler(_ req: Request, component: InteractiveComponentAPIRequest) throws -> HTTPStatus {
+    func postHandler(_ req: Request) throws -> HTTPStatus {
+        let component = try req.content.syncDecode(InteractiveComponentAPIRequest.self)
+
         switch component {
         case let .dialogSubmission(submission):
             delegate?.received(submission: submission)

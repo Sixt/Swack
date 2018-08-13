@@ -1,13 +1,17 @@
+//===----------------------------------------------------------------------===//
 //
-//  ChatPost.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 14.05.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-import Vapor
+import Foundation
 
-struct ChatPostMessage: Content {
+struct ChatPostMessage: Encodable {
 
     let channel: String
     let text: String

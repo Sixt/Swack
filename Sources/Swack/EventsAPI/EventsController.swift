@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  EventsController.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 14.05.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 
@@ -19,12 +23,13 @@ final class EventsController: RouteCollection {
 
     func boot(router: Router) throws {
         let route = router.grouped("events")
-
-        route.post(EventsAPIRequest.self, at:"", use: postHandler)
+        route.post("", use: postHandler)
     }
 
-    func postHandler(_ req: Request, eventRequest: EventsAPIRequest) throws -> EventsAPIResponse {
+    func postHandler(_ req: Request) throws -> EventsAPIResponse {
+        let eventRequest = try req.content.syncDecode(EventsAPIRequest.self)
         delegate?.received(event: eventRequest)
+        
         return EventsAPIResponse(challenge: eventRequest.challenge)
     }
 

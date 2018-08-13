@@ -1,13 +1,17 @@
+//===----------------------------------------------------------------------===//
 //
-//  DialogElements.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 04.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Vapor
 
-public enum DialogElementType: String, Codable {
+public enum DialogElementType: String, Encodable {
     case text
     case textArea
     case select

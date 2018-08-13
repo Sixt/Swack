@@ -1,34 +1,38 @@
+//===----------------------------------------------------------------------===//
 //
-//  DialogSubmission.swift
-//  App
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 15.07.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-import Vapor
+import Foundation
 
-public struct Team: Content {
+public struct Team: Decodable {
 
     public let id: String
     public let domain: String
 
 }
 
-public struct User: Content {
+public struct User: Decodable {
 
     public let id: String
     public let name: String
 
 }
 
-public struct Channel: Content {
+public struct Channel: Decodable {
 
     public let id: String
     public let name: String
 
 }
 
-public struct DialogSubmission: Content {
+public struct DialogSubmission: Decodable {
 
     public let type = "dialog_submission"
     public let submission: [String: String]
