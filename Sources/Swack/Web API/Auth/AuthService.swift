@@ -22,7 +22,7 @@ class AuthService {
     }
 
     func test() -> Future<AuthTestResponse> {
-        return client.post("https://slack.com/api/chat.postMessage", headers: HTTPHeaders([("Authorization", "Bearer \(token)")])).flatMap { response in
+        return client.post("https://slack.com/api/auth.test", headers: HTTPHeaders([("Authorization", "Bearer \(token)")])).flatMap { response in
             return try response.content.decode(AuthTestResponse.self)
         }
     }
