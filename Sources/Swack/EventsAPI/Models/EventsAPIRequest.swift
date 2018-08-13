@@ -12,8 +12,8 @@
 import Foundation
 
 public enum EventsAPIRequestType: String, Decodable {
-    case urlVerification
-    case eventCallback
+    case urlVerification = "url_verification"
+    case eventCallback = "event_callback"
 }
 
 public struct EventsAPIRequest: Decodable {
