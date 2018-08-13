@@ -19,8 +19,6 @@ public struct Dialog: Encodable {
     public let submitLabel: String
     public let notifyOnCancel: Bool
 
-    public var onSubmission: (DialogSubmission) -> Void
-
     enum CodingKeys: String, CodingKey {
         case title
         case callbackId = "callback_id"
@@ -29,23 +27,12 @@ public struct Dialog: Encodable {
         case notifyOnCancel = "notify_on_cancel"
     }
 
-    public init(title: String, callbackId: String, elements: [DialogElement], submitLabel: String, notifyOnCancel: Bool, onSubmission: @escaping (DialogSubmission) -> Void) {
+    public init(title: String, callbackId: String, elements: [DialogElement], submitLabel: String, notifyOnCancel: Bool) {
         self.title = title
         self.callbackId = callbackId
         self.elements = elements.map { AnyDialogElement($0) }
         self.submitLabel = submitLabel
         self.notifyOnCancel = notifyOnCancel
-        self.onSubmission = onSubmission
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try container.encode(title, forKey: .title)
-        try container.encode(callbackId, forKey: .callbackId)
-        try container.encode(submitLabel, forKey: .submitLabel)
-        try container.encode(notifyOnCancel, forKey: .notifyOnCancel)
-        try container.encode(elements, forKey: .elements)
     }
 
 }
