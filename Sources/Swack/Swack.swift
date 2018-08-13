@@ -24,20 +24,8 @@ public protocol SlashCommandListener: class {
 
 public protocol MessageListener: class {
 
-    var regex: String { get }
-
+    func responsible(for input: String) -> Bool
     func messageReceived(_ messageEvent: MessageEvent, swack: Swack)
-
-}
-
-extension MessageListener {
-
-    func matches(input: String) throws -> Bool {
-        let expression = try NSRegularExpression(pattern:  regex, options: [])
-        let match = expression.firstMatch(in: input, options: [], range: NSRange(location: 0, length: input.count))
-
-        return match != nil
-    }
 
 }
 
@@ -157,7 +145,7 @@ extension Swack: EventsControllerDelegate {
 
     func messageEventReceived(_ event: MessageEvent) {
         for listener in messageListeners {
-            guard (try? listener.matches(input: event.text)) ?? false else { return }
+            guard listener.responsible(for: event.text) else { continue }
             listener.messageReceived(event, swack: self)
         }
     }
@@ -170,7 +158,7 @@ extension Swack: SlashCommandsControllerDelegate {
     func received(command: SlashCommand) {
         log(object: command)
         for listener in slashCommandListeners {
-            guard listener.command == command.command else { return }
+            guard listener.command == command.command else { continue }
             listener.slashCommandReceived(command: command, swack: self)
         }
     }
