@@ -50,11 +50,14 @@ public class Swack {
 
     private let chatService: ChatService
     private let dialogService: DialogService
+    private let authService: AuthService
 
     private var messageListeners = [MessageListener]()
     private var slashCommandListeners = [SlashCommandListener]()
 
     private var dialogs = [String: DialogSubmissionListener]()
+
+    public private(set) var userId: String = ""
 
     public init(_ env: Environment, token: String) throws {
         let config = Config.default()
@@ -70,6 +73,11 @@ public class Swack {
         self.client = try application.client()
         self.chatService = ChatService(client: client, token: token)
         self.dialogService = DialogService(client: client, token: token)
+        self.authService = AuthService(client: client, token: token)
+
+        try authService.test().map { response in
+            self.userId = response.userId
+        }.wait()
 
         try setupRoutes()
 
