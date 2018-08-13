@@ -57,8 +57,6 @@ public class Swack {
 
     private var dialogs = [String: DialogSubmissionListener]()
 
-    public private(set) var userId: String = ""
-
     public init(_ env: Environment, token: String) throws {
         let config = Config.default()
         var services = Services.default()
@@ -74,10 +72,6 @@ public class Swack {
         self.chatService = ChatService(client: client, token: token)
         self.dialogService = DialogService(client: client, token: token)
         self.authService = AuthService(client: client, token: token)
-
-        try authService.test().map { response in
-            self.userId = response.userId
-        }.wait()
 
         try setupRoutes()
 

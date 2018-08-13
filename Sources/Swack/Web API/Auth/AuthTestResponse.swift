@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  AuthTestResponse.swift
-//  Swack
+// This source file is part of the Swack open source project
 //
-//  Created by franz busch on 13.08.18.
+// Copyright (c) 2018 e-Sixt
+// Licensed under MIT
 //
+// See LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 
@@ -12,9 +16,9 @@ struct AuthTestResponse: Decodable {
     let ok: Bool
     let url: String
     let team: String
-    let user: String
-    let teamId: String
-    let userId: String
+    let user: String?
+    let teamId: String?
+    let userId: String?
 
     private enum CodingKeys: String, CodingKey {
         case ok
