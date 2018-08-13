@@ -32,8 +32,8 @@ public protocol MessageListener: class {
 
 extension MessageListener {
 
-    func matches(input: String, swack: Swack) throws -> Bool {
-        let expression = try NSRegularExpression(pattern:  swack.userId + " " + regex, options: [])
+    func matches(input: String) throws -> Bool {
+        let expression = try NSRegularExpression(pattern:  regex, options: [])
         let match = expression.firstMatch(in: input, options: [], range: NSRange(location: 0, length: input.count))
 
         return match != nil
@@ -148,7 +148,7 @@ extension Swack: EventsControllerDelegate {
 
     func messageEventReceived(_ event: MessageEvent) {
         for listener in messageListeners {
-            guard (try? listener.matches(input: event.text, swack: self)) ?? false else { return }
+            guard (try? listener.matches(input: event.text)) ?? false else { return }
             listener.messageReceived(event, swack: self)
         }
     }
