@@ -47,26 +47,15 @@ public class Swack {
 
     private var dialogs = [String: DialogSubmissionListener]()
 
-    public init(_ env: Environment, token: String, isDebug: Bool) throws {
+    public init(token: String, application: Application, isDebug: Bool) throws {
         self.isDebug = isDebug
-        let config = Config.default()
-        var services = Services.default()
-        let router = EngineRouter.default()
-        services.register(router, as: Router.self)
-        var middlewares = MiddlewareConfig()
-        middlewares.use(ErrorMiddleware.self)
-        services.register(middlewares)
-        let app = try Application(config: config, environment: env, services: services)
-
-        self.application = app
+        self.application = application
         self.client = try application.client()
         self.chatService = ChatService(client: client, token: token)
         self.dialogService = DialogService(client: client, token: token)
         self.authService = AuthService(client: client, token: token)
 
         try setupRoutes()
-
-        let _ = app.asyncRun()
     }
 
     private func setupRoutes() throws {
